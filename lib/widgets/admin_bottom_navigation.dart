@@ -1,45 +1,59 @@
 import 'package:armadillo/screens/admin_profile_screen.dart';
 import 'package:armadillo/screens/admin_search_screen.dart';
 import 'package:flutter/material.dart';
+
 import '../screens/admin_home_screen.dart';
 import '../screens/admin_create_recipe_screen.dart';
 
 class AdminBottomNavigation extends StatelessWidget {
   final int currentIndex;
+  final Future<void> Function()? onRecipeSaved;
 
-  const AdminBottomNavigation({super.key, required this.currentIndex});
+  const AdminBottomNavigation({
+    super.key,
+    required this.currentIndex,
+    this.onRecipeSaved,
+  });
 
-  void _navigate(BuildContext context, int index) {
-    if (index == currentIndex) {
+  Future<void> _navigate(BuildContext context, int index) async {
+    if (index == currentIndex) return;
+
+    // Crear receta: abrir sin reemplazar la pantalla anterior.
+    if (index == 1) {
+      final resultado = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(builder: (_) => const AdminCreateRecipeScreen()),
+      );
+
+      if (!context.mounted) return;
+
+      if (resultado == true) {
+        await onRecipeSaved?.call();
+      }
+
       return;
     }
 
-    Widget screen;
+    // Las demás opciones conservan la navegación existente.
+    late final Widget screen;
 
     switch (index) {
       case 0:
         screen = const AdminHomeScreen();
         break;
-
-      case 1:
-        screen = const AdminCreateRecipeScreen();
-        break;
-
       case 2:
         screen = const AdminSearchScreen();
         break;
-
       case 3:
         screen = const AdminProfileScreen();
         break;
-
       default:
         screen = const AdminHomeScreen();
     }
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => screen),
+      MaterialPageRoute(builder: (_) => screen),
     );
   }
 
@@ -59,10 +73,10 @@ class AdminBottomNavigation extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildIcon(context, icon: Icons.home_outlined, index: 0),
-              _buildIcon(context, icon: Icons.add_box_outlined, index: 1),
-              _buildIcon(context, icon: Icons.search, index: 2),
-              _buildIcon(context, icon: Icons.person_outline, index: 3),
+              _buildIcon(context, Icons.home_outlined, 0),
+              _buildIcon(context, Icons.add_box_outlined, 1),
+              _buildIcon(context, Icons.search, 2),
+              _buildIcon(context, Icons.person_outline, 3),
             ],
           ),
         ),
@@ -70,17 +84,11 @@ class AdminBottomNavigation extends StatelessWidget {
     );
   }
 
-  Widget _buildIcon(
-    BuildContext context, {
-    required IconData icon,
-    required int index,
-  }) {
+  Widget _buildIcon(BuildContext context, IconData icon, int index) {
     final bool selected = currentIndex == index;
 
     return GestureDetector(
-      onTap: () {
-        _navigate(context, index);
-      },
+      onTap: () => _navigate(context, index),
       child: SizedBox(
         width: 45,
         height: 52,

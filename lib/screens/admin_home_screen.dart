@@ -321,7 +321,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 19,
                         fontWeight: FontWeight.w700,
-                        color: Colors.black,
+                        color: const Color(0xFF000000),
                       ),
                     ),
                     const SizedBox(height: 7),
@@ -367,7 +367,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                               Navigator.pop(context, true);
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
+                              backgroundColor: Color(0xff16D928),
                               foregroundColor: Colors.white,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -480,14 +480,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           // ======================================================
           // NAVEGACIÓN FLOTANTE
           // ======================================================
-          const Positioned(
+          Positioned(
             left: 0,
             right: 0,
             bottom: 15,
             child: Center(
               child: SizedBox(
                 width: 300,
-                child: AdminBottomNavigation(currentIndex: 0),
+                child: AdminBottomNavigation(
+                  currentIndex: 0,
+                  onRecipeSaved: cargarDatos,
+                ),
               ),
             ),
           ),
